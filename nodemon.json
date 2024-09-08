@@ -1,0 +1,7 @@
+{
+    "watch": ["./"],
+    "ignore": ["node_modules", ".gitignore"],
+    "events": {
+        "restart": "npm run format:fix "
+    }
+}

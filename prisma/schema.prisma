@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+//migration       npm exec prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  password String 
+  phone Float
+  adress String
+  ville String 
+  roles Json @default("[\"ROLE_USER\"]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  refreshToken String
+  store Stores[]
+  commande Commandes[]
+
+}
+
+model Stores {
+  id String @id @default(cuid())
+  name String
+  pseudo String?
+  ville String
+  adress String
+  logo String?
+  longitude String @unique
+  latitude String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String?
+  gasbottle GasBottles[]
+}
+
+model GasBottles {
+  id String @id @default(cuid())
+  brand String 
+  width Float 
+  stock Int
+  price Float
+  description String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user Stores? @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store_id String?
+  commande_items Commandes_Items[]
+}
+
+model Commandes {
+  id String @id @default(cuid())
+  delivery_date DateTime
+  adress_delivery String
+  statut String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String?
+  Commandes_Items Commandes_Items[]
+}
+
+model Commandes_Items {
+  id String @id @default(cuid())
+  quantity Int 
+  total_price Float
+  gasbottle GasBottles? @relation(fields: [gasbottle_id], references: [id], onDelete: Cascade)
+  gasbottle_id String?
+  commande Commandes? @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  commande_id String?
+}
