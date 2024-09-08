@@ -82,3 +82,9 @@ model Commandes_Items {
   commande Commandes? @relation(fields: [commande_id], references: [id], onDelete: Cascade)
   commande_id String?
 }
+
+model Delivies {
+  id String @id @default(cuid())
+  delivery_date DateTime
+  delivery_status String
+}

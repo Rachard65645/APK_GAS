@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { saltRounds, Secret } from '../utils/utils.js'
-import { prisma } from '../db/db_config/config.js'
+import { prisma } from '../../db/db_config/config.js'
+import { info } from '../midelwares/email.js'
 
 export const register = async (req, res) => {
     const { name, email, password, phone, adress, ville } = req.body
@@ -15,8 +16,9 @@ export const register = async (req, res) => {
                 adress,
                 ville,
                 password: hashPassword,
-            },
+            }, 
         })
+        info(email, name)
         res.status(200).json(register)
     } catch (err) {
         res.status(400).json({ error: err.message })
