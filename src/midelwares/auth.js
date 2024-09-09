@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { Secret } from '../utils/utils.js'
 
+
 function getRequestToken(req, res) {
     const authHeader = req.headers['authorization']
     if (!authHeader || typeof authHeader !== 'string') {
