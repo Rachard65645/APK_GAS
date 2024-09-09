@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { saltRounds, Secret } from '../utils/utils.js'
+import { saltRounds, Secret, SecretRefresh } from '../utils/utils.js'
 import { prisma } from '../../db/db_config/config.js'
 import { info } from '../midelwares/email.js'
 
@@ -16,7 +16,7 @@ export const register = async (req, res) => {
                 adress,
                 ville,
                 password: hashPassword,
-            }, 
+            },
         })
         info(email)
         res.status(200).json(register)
@@ -36,8 +36,37 @@ export const login = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid email or password' })
         }
+
+        //token
         const token = jwt.sign({ id: user.id, roles: user.roles }, Secret, { expiresIn: '2h' })
-        res.status(200).json({ token, Secret })
+
+        //refresh toke
+        const refreshToken = jwt.sign({id: user.id, roles: user.roles},SecretRefresh, {expiresIn: '2d'})
+
+        res.status(200).json({ token, refreshToken})
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+}
+
+export const refreshToken = async (req, res) => {
+    const refreshToken = req.body.refreshToken
+    if (!refreshToken) {
+        return res.status(401).json({ error: 'Invalid refresh token' }) 
+    }
+    try {
+        const decodedRefreshToken = jwt.verify(refreshToken, SecretRefresh)
+        const user =await prisma.users.findUnique({where:{id: decodedRefreshToken.id}})
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid user' })
+        }
+
+        // new token
+        const token = jwt.sign({ id: user.id, roles: user.roles }, Secret, { expiresIn: '2h' })
+
+        //new refresh toke
+        const newRefreshToken  = jwt.sign({id: user.id, roles: user.roles},SecretRefresh, {expiresIn: '2d'})
+        res.status(200).json({ token, newRefreshToken })
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
