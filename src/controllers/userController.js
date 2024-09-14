@@ -5,21 +5,21 @@ import { prisma } from '../../db/db_config/config.js'
 import { sendEmail } from '../email/emailRegister.js'
 
 export const register = async (req, res) => {
-    const { name, email, password, phone, adress, ville } = req.body
+    const { name, email, password, phone, address, city } = req.body
     try {
         const hashPassword = await bcrypt.hash(password, saltRounds)
         const register = await prisma.users.create({
             data: {
                 name,
                 email,
-                phone: parseFloat(phone),
-                adress,
-                ville,
+                phone,
+                address,
+                city,
                 password: hashPassword,
             },
         })
         if (register) {
-            sendEmail(name, email, adress)
+            sendEmail(name, email, address)
         }
         res.status(200).json(register)
     } catch (err) {

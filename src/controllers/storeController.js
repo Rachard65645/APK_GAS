@@ -31,7 +31,7 @@ export const getStores = async (req, res) => {
                 ville: true,
                 adress: true,
                 pseudo: true,
-                gasbottle: {
+                gasbottles: {
                     select: {
                         brand: true,
                         width: true,

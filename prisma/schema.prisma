@@ -25,75 +25,80 @@ datasource db {
 // }
 
 model Users {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  email     String      @unique
-  password  String
-  phone     Float
-  adress    String
-  ville     String
-  roles     Json        @default("[\"ROLE_USER\"]")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  email     String   @unique
+  password  String 
+  phone     String
+  address   String
+  city      String
+  roles     Json     @default("[\"ROLE_USER\"]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   store     Stores[]
-  commande  Commandes[]
+  orders    Orders[]
 }
 
 model Stores {
-  id        String       @id @default(cuid())
-  name      String
-  pseudo    String?
-  ville     String
-  adress    String
-  logo      String?
-  longitude String       @unique
-  latitude  String       @unique
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  user      Users?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id   String?
-  gasbottle GasBottles[]
+  id         String       @id @default(cuid())
+  name       String
+  pseudo     String?
+  ville      String
+  adress     String
+  logo       String?
+  longitude  Float        @unique
+  latitude   Float        @unique
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  user       Users?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String?
+  gasbottles GasBottles[]
 }
 
 model GasBottles {
-  id             String            @id @default(cuid())
+  id             String        @id @default(cuid())
   brand          String
   width          Float
   stock          Int
+  availableStock Int
   price          Float
-  description    String            @db.Text
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  store          Stores?           @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  description    String        @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  store          Stores?       @relation(fields: [store_id], references: [id], onDelete: Cascade)
   store_id       String?
-  commande_items Commandes_Items[]
+  ordersItems    OrdersItems[]
 }
 
-
-model Commandes {
-  id              String            @id @default(cuid())
-  delivery_date   DateTime
-  adress_delivery String
-  statut          String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  user            Users?            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+model Orders {
+  id              String        @id @default(cuid())
+  deliveryDate    DateTime
+  status          String
+  total_price     Float         @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            Users?        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id         String?
-  Commandes_Items Commandes_Items[]
+  Commandes_Items OrdersItems[]
+  deliveries      Delivies[]
 }
 
-model Commandes_Items {
+model OrdersItems {
   id           String      @id @default(cuid())
   quantity     Int
-  total_price  Float
   gasbottle    GasBottles? @relation(fields: [gasbottle_id], references: [id], onDelete: Cascade)
   gasbottle_id String?
-  commande     Commandes?  @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  orders       Orders?     @relation(fields: [commande_id], references: [id], onDelete: Cascade)
   commande_id  String?
 }
 
 model Delivies {
-  id              String   @id @default(cuid())
-  delivery_date   DateTime
-  delivery_status String
+  id             String   @id @default(cuid())
+  deliveryDate   DateTime
+  deliveryStatus String
+  address        String
+  commande       Orders?  @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  commande_id    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
