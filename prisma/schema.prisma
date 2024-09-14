@@ -37,7 +37,6 @@ model Users {
   updatedAt DateTime    @updatedAt
   store     Stores[]
   commande  Commandes[]
-  cart      Carts[]
 }
 
 model Stores {
@@ -68,27 +67,8 @@ model GasBottles {
   store          Stores?           @relation(fields: [store_id], references: [id], onDelete: Cascade)
   store_id       String?
   commande_items Commandes_Items[]
-  cart_item      Carts_Items[]
 }
 
-model Carts {
-  id          String        @id @default(cuid())
-  total_price Float         @default(0)
-  user        Users         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id     String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  cart_item   Carts_Items[]
-}
-
-model Carts_Items {
-  id            String     @id @default(cuid())
-  quatity       Float
-  cart          Carts      @relation(fields: [cart_id], references: [id], onDelete: Cascade)
-  cart_id       String
-  gas_bottle    GasBottles @relation(fields: [gas_bottle_id], references: [id], onDelete: Cascade)
-  gas_bottle_id String
-}
 
 model Commandes {
   id              String            @id @default(cuid())
