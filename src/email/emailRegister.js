@@ -1,21 +1,13 @@
 import 'dotenv/config'
 import ejs from 'ejs'
-import nodemailer from 'nodemailer'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import { promisify } from 'util'
+import { transporter } from '../../db/email_config/transport.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const renderFile = promisify(ejs.renderFile)
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.USER,
-        pass: process.env.PASS,
-    },
-})
 
 export const sendEmail = async (name, email, address) => {
     try {
@@ -25,11 +17,11 @@ export const sendEmail = async (name, email, address) => {
 
         const mailOptions = {
             from: {
-                name: 'Rich',
+                name: 'Allo GAS !',
                 address: process.env.USER,
             },
             to: email,
-            subject: 'Allo GAS !',
+            subject: 'Welcome',
             html: htmlContent,
         }
 
