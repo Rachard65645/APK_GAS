@@ -56,7 +56,7 @@ export const loginRequest = async (req, res, next) => {
 
     const {error} = login.validate(req.body, {abortEarly:false});
 
-    if ({error}) {
+    if (error) {
         return res.status(400).json({ error: error.details.map(detail => detail.message).join(', ') });
     }
 
