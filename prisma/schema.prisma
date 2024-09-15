@@ -45,7 +45,7 @@ model Stores {
   pseudo     String?
   ville      String
   adress     String
-  logo       String?
+  logo       String? 
   longitude  Float        @unique
   latitude   Float        @unique
   createdAt  DateTime     @default(now())

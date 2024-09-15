@@ -4,15 +4,24 @@ import { prisma } from '../../db/db_config/config.js'
 export const createStores = async (req, res) => {
     const { name, ville, adress, pseudo, longitude, latitude } = req.body
     const user_id = req.user.id
+    const logo = req.file ? `uploads/${req.file.filename} ` : null
     try {
+        const parseLongitude = parseFloat(longitude)
+        const parseLatitude = parseFloat(latitude)
+
+        if (isNaN(parseLatitude) || isNaN(parseLongitude)) {
+            return res.status(400).json({ error: 'longitude end latitude is not correct' })
+        }
+
         const store = await prisma.stores.create({
             data: {
                 name,
                 ville,
                 adress,
-                longitude,
-                latitude,
+                longitude: parseLongitude,
+                latitude: parseLatitude,
                 pseudo,
+                logo,
                 user_id,
             },
         })
@@ -42,7 +51,7 @@ export const getStores = async (req, res) => {
                 user: {
                     select: {
                         name: true,
-                        adress: true,
+                        address: true,
                     },
                 },
             },
@@ -75,7 +84,7 @@ export const showStore = async (req, res) => {
                 user: {
                     select: {
                         name: true,
-                        adress: true,
+                        address: true,
                     },
                 },
             },
@@ -83,35 +92,7 @@ export const showStore = async (req, res) => {
         res.status(200).json(store)
     } catch (err) {
         res.status(400).json({ error: err.message })
-    }
+    }     
 }
 
-// Update store
-export const updateStore = async (req, res) => {
-    const { name, ville, adress, pseudo, longitude, latitude } = req.body
-    const user_id = req.user.id
-    const id = req.params.id
-    try {
-        const store = await prisma.stores.findUnique({ where: { id: id } })
-        if (!store) {
-            res.status(400).json({ error: 'store not found' })
-        }
-        if (store) {
-            await prisma.stores.update({
-                where: { id: id },
-                data: {
-                    name,
-                    ville,
-                    adress,
-                    longitude,
-                    latitude,
-                    pseudo,
-                    user_id,
-                },
-            })
-        }
-        res.status(200).json(store)
-    } catch (err) {
-        res.status(400).json({ error: err.message })
-    }
-}
+

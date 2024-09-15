@@ -18,10 +18,10 @@ export const register = async (req, res) => {
                 password: hashPassword,
             },
         })
+        res.status(200).json(register)
         if (register) {
             sendEmail(name, email, address)
         }
-        res.status(200).json(register)
     } catch (err) {
         res.status(400).json({ error: err.message })
     }

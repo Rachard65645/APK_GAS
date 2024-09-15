@@ -1,7 +1,0 @@
-{
-    "watch": ["./"],
-    "ignore": ["node_modules", ".gitignore", "ApKGAZ_model.mwb", "public"],
-    "events": {
-        "restart": "npm run format:fix "
-    }
-}
