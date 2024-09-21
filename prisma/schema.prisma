@@ -1,10 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-//migration       npm exec prisma migrate dev
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,91 +10,134 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Session {
-//   id        String     @id @default(cuid())
-//   user_id   String      @unique
-//   token String @unique
-//   freshToken String @unique
-//   expiredAt DateTime 
-//   createdAt DateTime     @default(now())
-//   updatedAt DateTime     @updatedAt
-// }
-
 model Users {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String 
-  phone     String
-  address   String
-  city      String
-  roles     Json     @default("[\"ROLE_USER\"]")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  store     Stores[]
-  orders    Orders[]
+  id         String       @id @default(cuid())
+  name       String
+  email      String       @unique
+  password   String
+  phone      String
+  address    String
+  city       String
+  roles      Json         @default("[\"ROLE_USER\"]")
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  orders     Orders[]
+  coordonner Coordonner[]
+}
+
+model Coordonner {
+  id        String  @id @default(cuid())
+  longitude Float
+  latitude  Float
+  user      Users?  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   String?
+  store     Stores? @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store_id  String?
+  @@index([longitude, latitude])
 }
 
 model Stores {
   id         String       @id @default(cuid())
   name       String
   pseudo     String?
-  ville      String
-  adress     String
-  logo       String? 
-  longitude  Float        @unique
-  latitude   Float        @unique
+  city       String
+  address    String
+  logo       String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  user       Users?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id    String?
-  gasbottles GasBottles[]
+  coordonner Coordonner[]
+  stock      Stock[]
+  rating     Float?       
+  reviews    Json?       
 }
 
-model GasBottles {
-  id             String        @id @default(cuid())
-  brand          String
-  width          Float
-  stock          Int
-  availableStock Int
-  price          Float
-  description    String        @db.Text
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  store          Stores?       @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  store_id       String?
-  ordersItems    OrdersItems[]
+model Stock {
+  id         String    @id @default(cuid())
+  quantity   Int
+  status     StockStatus @default(AVAILABLE) 
+  store      Stores?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store_id   String?
+  product    Products? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Products {
+  id          String        @id @default(cuid())
+  brand       String
+  width       Float
+  price       Float
+  description String        @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ordersItems OrdersItems[]
+  stock       Stock[]
+  type        String     
 }
 
 model Orders {
-  id              String        @id @default(cuid())
-  deliveryDate    DateTime
-  status          String
-  total_price     Float         @default(0)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  user            Users?        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id              String         @id @default(cuid())
+  delivery_status DeliveryStatus
+  status          StatusCommande
+  total_price     Float          @default(0)
+  payment_status  PaymentStatus  @default(PENDING) 
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            Users?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id         String?
   Commandes_Items OrdersItems[]
   deliveries      Delivies[]
 }
 
 model OrdersItems {
-  id           String      @id @default(cuid())
-  quantity     Int
-  gasbottle    GasBottles? @relation(fields: [gasbottle_id], references: [id], onDelete: Cascade)
-  gasbottle_id String?
-  orders       Orders?     @relation(fields: [commande_id], references: [id], onDelete: Cascade)
-  commande_id  String?
+  id          String    @id @default(cuid())
+  quantity    Int
+  products    Products? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id  String?
+  orders      Orders?   @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  commande_id String?
 }
 
 model Delivies {
-  id             String   @id @default(cuid())
-  deliveryDate   DateTime
-  deliveryStatus String
-  address        String
-  commande       Orders?  @relation(fields: [commande_id], references: [id], onDelete: Cascade)
-  commande_id    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  address_delivery String
+  deliveryStatus   DeliveryStatus
+  address          String
+  commande         Orders?  @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  commande_id      String?
+  deliverer        Deliver? @relation(fields: [deliver_id], references: [id], onDelete: Cascade) 
+  deliver_id       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Deliver {
+  id    String @id @default(cuid())
+  name  String
+  phone String
+  deliveries Delivies[] 
+}
+
+enum StatusCommande {
+  EN_COURS
+  LIVREE
+  ANNULEE
+}
+
+enum DeliveryStatus {
+  EN_ATTENTE
+  EN_ROUTE
+  LIVREE
+}
+
+enum StockStatus {
+  AVAILABLE
+  OUT_OF_STOCK
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
 }

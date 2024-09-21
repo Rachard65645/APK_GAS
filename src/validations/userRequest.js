@@ -3,7 +3,7 @@ import joi from 'joi'
 const password_regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!.@#$%^&*])(?=.{8,})')
 
 
-export const registerRequest = async (req, res, next) => {
+export const registerRequest =  (req, res, next) => {
 
     const register = joi.object({
         name: joi.string().required().messages({
@@ -25,7 +25,7 @@ export const registerRequest = async (req, res, next) => {
         address: joi.string().required().messages({
             'string.empty': 'Adress is required',
         }),
-        city: joi.string().required().messages({
+        city: joi.string().required().messages({ 
             'string.empty': 'City is required',
         }),
     });

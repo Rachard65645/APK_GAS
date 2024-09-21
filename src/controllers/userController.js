@@ -73,3 +73,89 @@ export const refreshToken = async (req, res) => {
         res.status(500).json({ error: err.message })
     }
 }
+
+export const currentUser = async (req,res) => {
+    const user_id = req.user.id
+    try {
+        const user = await prisma.users.findFirst({where:{id:user_id}})
+        if (!user) {
+            res.status(400).json({ error: 'user not found'})
+        }
+
+        req.user = user
+           
+        return res.status(200).json(user)
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+} 
+
+export const fetchUser = async (req,res) =>{
+    try {
+        const userMany = await prisma.users.findMany({
+            select:{
+                name:true,
+                phone:true,
+                city:true,
+                address:true,
+                coordonner:{
+                    select:{
+                        longitude:true,
+                        latitude:true
+                    }
+                }
+            }
+        })
+        res.status(200).json(userMany)
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
+}
+
+export const findUniqueUser = async (req,res) =>{
+    const id = req.params.id
+    try {
+        const userUnique = await prisma.users.findUnique({
+            where: {id},
+            select:{
+                name:true,
+                phone:true,
+                city:true,
+                address:true,
+                coordonner:{
+                    select:{
+                        longitude:true,
+                        latitude:true
+                    }
+                }
+            }
+        })
+        res.status(200).json(userUnique)
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
+}
+
+export const updateUser = async(req,res)=>{
+    const { name,phone,address,city } = req.body
+    const id = req.params.id
+    try {
+        const user = await prisma.users.findUnique({where:{id}})
+        if (!user) {
+            res.status(400).json({"error": "user not found"})
+        }
+        const up = await prisma.users.update({
+          where:{id}, 
+          data:{
+            name,
+            address,
+            city,
+            phone
+          }
+        })
+        res.status(200).json(up)
+    } catch (err) {
+        res.status(400).json({error: err.message})
+    }
+}
+

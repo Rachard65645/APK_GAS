@@ -2,8 +2,6 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import userRoute from './src/routes/userRoute.js'
-import gasBottleRoute from './src/routes/gasBottleRoute.js'
-import storeRoute from './src/routes/storeRoute.js'
 
 const app = express()
 
@@ -16,7 +14,5 @@ app.use((req, res, next) => {
     next()
 })
 app.use('/api', userRoute)
-app.use('/api', gasBottleRoute)
-app.use('/api', storeRoute)
 
 app.listen(process.env.PORT, console.log('server is runing to port 6000'))
