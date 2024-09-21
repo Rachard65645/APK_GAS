@@ -23,6 +23,7 @@ model Users {
   updatedAt  DateTime     @updatedAt
   orders     Orders[]
   coordonner Coordonner[]
+  store      Stores[]
 }
 
 model Coordonner {
@@ -43,12 +44,12 @@ model Stores {
   city       String
   address    String
   logo       String?
+  user      Users?  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   coordonner Coordonner[]
-  product    Products[]
-  rating     Float?       
-  reviews    Json?       
+  product    Products[]    
 }
 
 
