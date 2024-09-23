@@ -40,7 +40,7 @@ export const registerRequest =  (req, res, next) => {
 };
 
 
-export const loginRequest = async (req, res, next) => {
+export const loginRequest = (req, res, next) => {
     const login = joi.object({
 
         email: joi.string().email().required().messages({
@@ -62,3 +62,29 @@ export const loginRequest = async (req, res, next) => {
 
     next()
 }
+
+export const updateUserrequest =  (req, res, next) => {
+
+    const user = joi.object({
+        name: joi.string().messages({
+            'string.empty': 'Name is required',
+        }),
+        phone: joi.string().min(9).messages({
+           'string.min': 'Invalid phone number',
+        }),
+        address: joi.string().messages({
+            'string.empty': 'Adress is required',
+        }),
+        city: joi.string().messages({ 
+            'string.empty': 'City is required',
+        }),
+    });
+
+    const { error } = user.validate(req.body, { abortEarly: false });
+
+    if (error) {
+        return res.status(400).json({ error: error.details.map(detail => detail.message).join(', ') });
+    }
+
+    next();
+};

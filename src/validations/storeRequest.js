@@ -21,9 +21,7 @@ export const storeRequest = () => {
         logo: Joi.string().required().message({
             'string': 'logo is required'
         })
+    })
 
     
-
-     
-    })
 }

@@ -24,7 +24,7 @@ export const register = async (req, res) => {
         }
     } catch (err) {
         res.status(400).json({ error: err.message })
-    }
+    } 
 }
 
 export const login = async (req, res) => {
