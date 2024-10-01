@@ -23,7 +23,7 @@ export const registerRequest =  (req, res, next) => {
             'string.empty': 'Password is required',
         }),
         address: joi.string().required().messages({
-            'string.empty': 'Adress is required',
+            'string.empty': 'Address is required',
         }),
         city: joi.string().required().messages({ 
             'string.empty': 'City is required',

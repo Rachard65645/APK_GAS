@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import userRoute from './src/routes/userRoute.js'
 import productRoute from './src/routes/productRoute.js'
+import storeRoute from './src/routes/storeRoute.js'
 const app = express()
 
 app.use(express.json())
@@ -15,5 +16,6 @@ app.use((req, res, next) => {
 })
 app.use('/api', userRoute)
 app.use('/api', productRoute)
+app.use('/api', storeRoute)
 
 app.listen(process.env.PORT, console.log('server is runing to port 6000'))
