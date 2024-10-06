@@ -6,7 +6,7 @@ import { productRequest } from '../validations/productRequest.js'
 
 const productRoute = express.Router()
 
-productRoute.post('/products/add/:id', productRequest, isGrantedAccess([role.VENDOR]), CreateProduct)
+productRoute.post('/products/add/:store_id',  isGrantedAccess([role.VENDOR]), CreateProduct)
 productRoute.get('/products/findMany', FetchProduct)
 
 export default  productRoute
