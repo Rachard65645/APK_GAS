@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// npm exec prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String
+  address   String
+  city      String
+  roles     Json     @default("[\"ROLE_USER\"]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders             Orders[]
+  coordonner         Coordonner[]
+  store              Stores[]
+  aggregatorCustomer AggregatorCustomers[]
+  subscriptions      Subscriptions[]
+  transactions       Transactions[]
+  subscribes Subscribes[]
+}
+
+model Coordonner {
+  id        Int     @id @default(autoincrement())
+  longitude Float
+  latitude  Float
+  user      Users?  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   Int?
+  store     Stores? @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store_id  Int?
+
+  @@index([longitude, latitude])
+}
+
+model Stores {
+  id        Int      @id @default(autoincrement())
+  name      String
+  pseudo    String?
+  city      String
+  address   String
+  logo      String?
+  user      Users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  coordonner Coordonner[]
+  product    Products[]
+}
+
+model Products {
+  id          Int         @id @default(autoincrement())
+  name        String
+  brand       String
+  width       Float
+  price       Float
+  stock       Int
+  type        String
+  status      StockStatus @default(AVAILABLE)
+  store       Stores?     @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store_id    Int?
+  description String      @db.Text
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  ordersItems OrdersItems[]
+}
+
+model Orders {
+  id              Int            @id @default(autoincrement())
+  delivery_status DeliveryStatus
+  status          StatusCommande
+  total_price     Float          @default(0)
+  payment_status  PaymentStatus  @default(PENDING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            Users?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id         Int?
+
+  commandes_Items OrdersItems[]
+  deliveries      Delivies[]
+  subscriptions   Subscriptions[]
+  waitingWebhook  WaitingWebhook[]
+
+  subscribes Subscribes[]
+}
+
+model OrdersItems {
+  id         Int       @id @default(autoincrement())
+  quantity   Int
+  products   Products? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int?
+  orders     Orders?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id   Int?
+}
+
+model Delivies {
+  id               Int            @id @default(autoincrement())
+  address_delivery String
+  deliveryStatus   DeliveryStatus
+  address          String
+  commande         Orders?        @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  commande_id      Int?
+  deliverer        Deliver?       @relation(fields: [deliver_id], references: [id], onDelete: Cascade)
+  deliver_id       Int?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Aggregators {
+  id        Int      @id @default(autoincrement())
+  name      String
+  strategy  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  aggregatorCustomer AggregatorCustomers[]
+  aggregatorService  AggregatorServices[]
+}
+
+model AggregatorCustomers {
+  id            Int          @id @default(autoincrement())
+  user          Users?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       Int?
+  value         String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  aggregator    Aggregators? @relation(fields: [aggregator_id], references: [id], onDelete: Cascade)
+  aggregator_id Int?
+}
+
+model AggregatorServices {
+  id            Int          @id @default(autoincrement())
+  aggregator    Aggregators? @relation(fields: [aggregator_id], references: [id], onDelete: Cascade)
+  aggregator_id Int?
+  version       String?
+  secretKey     String?
+  devApiKey     String?
+  apiKey        String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  aggregatorMethods AggregatorMethods[]
+}
+
+model MethodPaids {
+  id        Int      @id @default(autoincrement())
+  name      String
+  file      String
+  active    Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  aggregatorMethods AggregatorMethods[]
+}
+
+model AggregatorMethods {
+  id                   Int                 @id @default(autoincrement())
+  aggregator           AggregatorServices? @relation(fields: [aggregatorService_id], references: [id], onDelete: Cascade)
+  aggregatorService_id Int?
+  methodPaid           MethodPaids?        @relation(fields: [methodpaid_id], references: [id], onDelete: Cascade)
+  methodpaid_id        Int?
+
+  subscriptions  Subscriptions[]
+  waitingWebhook WaitingWebhook[]
+  subscribe Subscribes[]
+}
+
+model Subscriptions {
+  id                  Int                @id @default(autoincrement())
+  aggregatorMethods   AggregatorMethods? @relation(fields: [aggregatorMethod_id], references: [id], onDelete: Cascade)
+  aggregatorMethod_id Int?
+  user                Users?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id             Int?
+  orders              Orders?            @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id            Int?
+  sub_id              String
+  status              String
+  redirectUrl         String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+model Transactions {
+  id        Int      @id @default(autoincrement())
+  status    String
+  amount    Float
+  user      Users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  message   String?
+  currency  String?
+  type      String?
+
+  waitingWebhook WaitingWebhook[]
+
+  subscribes Subscribes[]
+}
+
+model WaitingWebhook {
+  id                  Int                @id @default(autoincrement())
+  aggregatorMethods   AggregatorMethods? @relation(fields: [aggregatorMethod_id], references: [id], onDelete: Cascade)
+  aggregatorMethod_id Int?
+  transactions        Transactions?      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  transaction_id      Int?
+  orders              Orders?            @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id            Int?
+  session             Int
+}
+
+model Subscribes {
+  id                  Int                @id @default(autoincrement())
+  aggregatorMethods   AggregatorMethods?  @relation(fields: [aggregatorMethod_id], references: [id], onDelete: Cascade)
+  aggregatorMethod_id Int?
+  redirectUrl         String?
+  orders              Orders?            @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id            Int?
+  session             String?
+  transactions        Transactions?      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  transaction_id      Int?
+  user          Users?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       Int?
+}
+
+model Deliver {
+  id    Int    @id @default(autoincrement())
+  name  String
+  phone String
+
+  deliveries Delivies[]
+}
+
+enum StatusCommande {
+  EN_COURS
+  LIVREE
+  ANNULEE
+}
+
+enum DeliveryStatus {
+  EN_ATTENTE
+  EN_ROUTE
+  LIVREE
+}
+
+enum StockStatus {
+  AVAILABLE
+  OUT_OF_STOCK
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
