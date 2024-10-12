@@ -1,9 +1,9 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
-import productRoute from './routes/productRoute.js'
-import userRoute from './routes/userRoute.js'
-
+import userRoute from './src/routes/userRoute.js'
+import productRoute from './src/routes/productRoute.js'
+import storeRoute from './src/routes/storeRoute.js'
 const app = express()
 
 app.use(express.json())
@@ -14,7 +14,8 @@ app.use((req, res, next) => {
     res.setHeader('Access-Controll-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
     next()
 })
-app.use('/api', productRoute)
 app.use('/api', userRoute)
+app.use('/api', productRoute)
+app.use('/api', storeRoute)
 
 app.listen(process.env.PORT, console.log('server is runing to port 6000'))
