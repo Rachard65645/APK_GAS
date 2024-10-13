@@ -104,6 +104,8 @@ model OrdersItems {
   product_id Int?
   orders     Orders?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
   order_id   Int?
+  aggregator    Aggregators? @relation(fields: [aggregator_id], references: [id], onDelete: Cascade)
+  aggregator_id Int?
 }
 
 model Delivies {
@@ -123,11 +125,15 @@ model Aggregators {
   id        Int      @id @default(autoincrement())
   name      String
   strategy  String
+  apiKey    String
+  siteId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   aggregatorCustomer AggregatorCustomers[]
   aggregatorService  AggregatorServices[]
+
+  OrdersItems OrdersItems[]
 }
 
 model AggregatorCustomers {

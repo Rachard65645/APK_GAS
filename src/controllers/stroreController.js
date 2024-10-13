@@ -101,11 +101,12 @@ export const filterStore = async (req, res) => {
                         brand: true,
                         price: true,
                         width: true,
+                        stock: true,
                     },
                 },
             },
         })
-        res.status(200).json(store)
+        res.status(200).json({store:store})
     } catch (err) {
         res.status(500).json({ error: err.message })
     }

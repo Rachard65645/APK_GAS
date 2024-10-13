@@ -1,5 +1,4 @@
 import { prisma } from '../../../db/db_config/config.js'
-import { feda } from '../aggregator/feda.js'
 
 export const subscribe = async (req, res) => {
     const currentUseruser = req.user.id
@@ -45,12 +44,8 @@ export const subscribe = async (req, res) => {
             }
         })    
         const strategy = subscribe.aggregatorMethods.aggregator.aggregator.strategy
-        switch (strategy) {
-            case 'FIDA':
-                await feda(req, res)
-                break
-        }
-        const webhook = await prisma.waitingWebhook.create({
+        //swith case des strategy
+        await prisma.waitingWebhook.create({
             data: {
                 transaction_id: parseInt(subscribe.transaction_id),
                 session: parseInt(order_id),

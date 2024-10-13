@@ -106,7 +106,7 @@ export const fetchUser = async (req, res) => {
                 },
             },
         })
-        res.status(200).json(userMany)
+        res.status(200).json({users:userMany})
     } catch (err) {
         res.status(400).json({ error: err.message })
     }

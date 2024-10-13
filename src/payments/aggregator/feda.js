@@ -1,4 +1,4 @@
-import { FedaPay, Transaction } from 'fedapay'
+import { Transaction } from 'fedapay'
 import { prisma } from '../../../db/db_config/config.js'
 
 export const feda = async (req, res) => {
