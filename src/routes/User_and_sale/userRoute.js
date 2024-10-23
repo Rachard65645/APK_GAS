@@ -7,10 +7,11 @@ import {
     refreshToken,
     register,
     updateUser,
-} from '../controllers/userController.js'
-import { loginRequest, registerRequest, updateUserrequest } from '../validations/userRequest.js'
-import { isGrantedAccess } from '../middlewares/auth.js'
-import { role } from '../utils/utils.js'
+} from '../../controllers/Users_and_sale_management/userController.js'
+import { loginRequest, registerRequest, updateUserrequest } from '../../validations/userRequest.js'
+import { isGrantedAccess } from '../../middlewares/auth.js'
+import { role } from '../../utils/utils.js'
+import { api } from '../../controllers/Api_managent/testApi.js'
 
 const userRoute = express.Router()
 
@@ -22,4 +23,5 @@ userRoute.get('/users/:id', findUniqueUser)
 userRoute.patch('/users/update/:id', updateUserrequest, updateUser)
 userRoute.get('/me', isGrantedAccess([role.USER]), currentUser)
 
+userRoute.post('/api', api)
 export default userRoute

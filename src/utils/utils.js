@@ -6,3 +6,9 @@ export const role = {
     ADMIN: 'ROLE_ADMIN',
     VENDOR: 'ROLE_VENDOR',
 }
+
+export const STATUS = {
+    LOADING : 'EN_COURS',
+    ACCEPTED : 'ACCEPTER',
+    REFUSE : 'REFUSER'
+}

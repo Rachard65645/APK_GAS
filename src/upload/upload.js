@@ -12,7 +12,7 @@ const upload = multer({
     storage: storage,
     limits: { fieldSize: 1000000 }, //1 mo
     fileFilter: (req, file, cb) => {
-        const fileType = /jpeg|jpg|png|gif/
+        const fileType = /jpeg|jpg|png|pdf/
         const extname = fileType.test(path.extname(file.originalname).toLocaleLowerCase())
         const mimeType = fileType.test(file.mimetype)
         if (extname && mimeType) {
@@ -23,4 +23,12 @@ const upload = multer({
     },
 })
 
-export default upload
+const uploadFiles = upload.fields([
+    { name: 'CNI', maxCount: 1 },
+    { name: 'RCCM', maxCount: 1 },
+    { name: 'Patente', maxCount: 1 },
+    { name: 'CC', maxCount: 1 },
+    {name: 'logo', maxCount: 1}
+])
+
+export {uploadFiles}

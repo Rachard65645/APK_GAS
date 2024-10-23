@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { saltRounds, Secret, SecretRefresh } from '../utils/utils.js'
-import { prisma } from '../../db/db_config/config.js'
-import { sendEmail } from '../email/emailRegister.js'
+import { saltRounds, Secret, SecretRefresh } from '../../utils/utils.js'
+import { prisma } from '../../../db/db_config/config.js'
+import { sendEmail } from '../../email/emailRegister.js'
 
 export const register = async (req, res) => {
     const { name, email, password, phone, address, city } = req.body
