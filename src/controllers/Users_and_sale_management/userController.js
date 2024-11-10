@@ -1,20 +1,27 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { saltRounds, Secret, SecretRefresh } from '../../utils/utils.js'
+import { saltRounds, Secret, SecretRefresh} from '../../utils/utils.js'
 import { prisma } from '../../../db/db_config/config.js'
 import { sendEmail } from '../../email/emailRegister.js'
+import { configuration } from '../Api_managent/testApi.js'
+import axios from 'axios'
 
 export const register = async (req, res) => {
-    const { name, email, password, phone, address, city } = req.body
+    const { name, email, password, phone } = req.body
     try {
+
+       const response =  await axios(configuration)      
+       const {city, region} = response.data 
+
         const hashPassword = await bcrypt.hash(password, saltRounds)
+
         const register = await prisma.users.create({
             data: {
                 name,
                 email,
                 phone,
-                address,
-                city,
+                address: region,
+                city: city,
                 password: hashPassword,
             },
         })
@@ -22,7 +29,7 @@ export const register = async (req, res) => {
         if (register) {
             sendEmail(name, email, address)
         }
-    } catch (err) {
+    } catch (err) { 
         res.status(400).json({ error: err.message })
     }
 }
@@ -30,7 +37,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body
     try {
-        const user = await prisma.users.findUnique({ where: { email } })
+        const user = await prisma.users.findUnique({ where: { email }})
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' })
         }
@@ -39,8 +46,9 @@ export const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' })
         }
 
+        
         //token
-        const token = jwt.sign({ id: user.id, roles: user.roles }, Secret, { expiresIn: '2h' })
+        const token = jwt.sign({ id: user.id, roles: user.roles}, Secret, { expiresIn: '2h' })
 
         //refresh toke
         const refreshToken = jwt.sign({ id: user.id, roles: user.roles }, SecretRefresh, { expiresIn: '2d' })
@@ -77,7 +85,7 @@ export const refreshToken = async (req, res) => {
 export const currentUser = async (req, res) => {
     const user_id = req.user.id
     try {
-        const user = await prisma.users.findFirst({ where: { id: user_id } })
+        const user = await prisma.users.findFirst({ where: { id: user_id } , include: {Seller:true}})
         if (!user) {
             res.status(400).json({ error: 'user not found' })
         }
@@ -98,12 +106,11 @@ export const fetchUser = async (req, res) => {
                 phone: true,
                 city: true,
                 address: true,
-                coordonner: {
-                    select: {
-                        longitude: true,
-                        latitude: true,
-                    },
-                },
+                Seller: {
+                    select:{
+                        status:true
+                    }
+                }
             },
         })
         res.status(200).json({users:userMany})

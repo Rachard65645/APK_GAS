@@ -1,21 +1,20 @@
-import axios from 'axios'
+import axios from "axios"
 
-const URL = 'https://ipinfo.io/?token=064b094342bce7'
+const URL = 'https://ipinfo.io?token=064b094342bce7'
 
-export const api = async (req, res) => {
-    try {
-        const config = {
-            method: 'GET',
-            url: URL, 
-            headers: {
-                Accept: 'application/json ipinfo.io',
-                Accept: 'application/json ipinfo.io/8.8.8.8',
-            },
-        }
-
-        const response = await axios(config)
-        res.status(200).json(response.data)
-    } catch (err) {
-        res.status(500).json({error: err.message})
-    }
+export const configuration = {
+    method: 'GET',
+    url: URL, 
+   
 }
+
+
+export const position = async (req, res) => {
+    try {
+        const position = await axios(configuration)
+
+        res.status(200).json(position.data)
+    } catch (err) {
+        res.status(400).json({error: 'not info'})
+    }
+} 

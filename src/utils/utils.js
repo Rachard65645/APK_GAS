@@ -12,3 +12,8 @@ export const STATUS = {
     ACCEPTED : 'ACCEPTER',
     REFUSE : 'REFUSER'
 }
+
+export const Seller = {
+    ACCEPTED: 'ACCEPTER',
+    EN_COURS: 'EN_COURS'
+}

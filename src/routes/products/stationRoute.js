@@ -15,6 +15,6 @@ stationRoute.get('/stations',  stationCollection)
 stationRoute.get('/station/:id', fetchStation)
 stationRoute.patch('/station/update/:id', isGrantedAccess([role.VENDOR]), updateStation)
 stationRoute.delete('/station/delete/:id', deleteStation)
-stationRoute.post('/station/add', isGrantedAccess([role.VENDOR]), createStation)
+stationRoute.post('/station/add', createStation)
 
 export default stationRoute

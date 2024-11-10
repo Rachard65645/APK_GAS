@@ -42,11 +42,12 @@ export const stationCollection = async (req, res) =>{
             select: {
                 id: true,
                 name:true,
+                logo: true,
                 createdAt: true,
                 updatedAt: true
             }
         })
-        res.status(200).json(station)
+        res.status(200).json({stations:station})
     } catch (err) {
         res.status(500).json({error: err.message})
     }

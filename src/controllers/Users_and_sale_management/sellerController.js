@@ -1,21 +1,27 @@
 import { prisma } from '../../../db/db_config/config.js'
-import { role, STATUS } from '../../utils/utils.js'
+import { role, Seller, STATUS } from '../../utils/utils.js'
 
 // Create the Sellers
 export const CraeteSeller = async (req, res) => {
     const user_id = req.user.id
     const files = req.files
     try {
+        const user = await prisma.users.findUnique({ where: { id: user_id }, include: {Seller: {select: {status:true}}} })
+
+        if (!user) {
+            return res.status(401).json({ error: 'user not found' })
+        }
+
+        const hasSeller = user.Seller.some((Seller) => Seller.status == STATUS.ACCEPTED) && user.roles == role.VENDOR
+
+        if (hasSeller) {
+            return res.status(200).json({ success: 'vous avez deja la possibilé d\'ajouter une boutique' })
+        }
+
         const CNI = files?.CNI ? `uploads/${files.CNI[0].filename}` : null
         const RCCM = files?.RCCM ? `uploads/${files.RCCM[0].filename}` : null
         const Patente = files?.Patente ? `uploads/${files.Patente[0].filename}` : null
         const CC = files?.CC ? `uploads/${files.CC[0].filename}` : null
-
-        const user = await prisma.users.findUnique({ where: { id: user_id } })
-
-        if (!user) {
-            return res.status(500).json({ error: 'user not found' })
-        }
 
         const seller = await prisma.seller.create({
             data: {
@@ -26,9 +32,10 @@ export const CraeteSeller = async (req, res) => {
                 },
                 CNI,
                 RCCM,
-                Patente,
+                Patente, 
                 CC,
-                status: STATUS.LOADING,
+                status: Seller.EN_COURS
+                
             },
         })
 
@@ -49,6 +56,11 @@ export const SellerCollection = async (req, res) => {
                 Patente: true,
                 CC: true,
                 status: true,
+                users: {
+                    select: {
+                        name: true
+                    }
+                }
             },
         })
         res.status(200).json({ Sellers: seller })
@@ -70,6 +82,11 @@ export const fetchSeller = async (req, res) => {
                 Patente: true,
                 CC: true,
                 status: true,
+                users: {
+                    select: {
+                        name: true
+                    }
+                }
             },
         })
         if (!seller) {
@@ -84,13 +101,12 @@ export const fetchSeller = async (req, res) => {
 // Validate the seller
 export const SuccessSeller = async (req, res) => {
     const id = req.params.id
-
     try {
         const seller = await prisma.seller.findUnique({ where: { id } })
         if (!seller) {
             return res.status(500).json({ error: 'seller not existe' })
         }
-        const validSeller = await prisma.seller.update({ 
+        await prisma.seller.update({ 
             where: { id }, 
             data: {      
                 status: STATUS.ACCEPTED,
@@ -101,7 +117,6 @@ export const SuccessSeller = async (req, res) => {
                  }
             } 
         })
-        res.status(200).json({ Sellers: validSeller })
     } catch (err) {
         res.status(500).json({ error: err.message })
     }
@@ -116,9 +131,9 @@ export const RefuseSeller = async (req, res) => {
         if (!seller) {
             return res.status(500).json({ error: 'seller not existe' })
         }
-        const validSeller = await prisma.seller.update({ where: { id }, data: { status: STATUS.REFUSE } })
-        res.status(200).json({ Sellers: validSeller })
-    } catch (err) {
+         await prisma.seller.update({ where: { id }, data: { status: STATUS.REFUSE } })
+
+        } catch (err) {
         res.status(500).json({ error: err.message })
     }
 }
@@ -133,7 +148,7 @@ export const DeleteSeller = async (req,res)=>{
             return res.status(500).json({ error: 'seller not existe' })
         }
         await prisma.seller.delete({where: {id}})
-        res.status(200).json({success: 'seller delete success'})
+
     } catch (err) {
         res.status(500).json({ error: err.message })
     }

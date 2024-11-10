@@ -15,7 +15,7 @@ const categoriesRoute = express.Router()
 categoriesRoute.get('/bottleCategories', getCategory)
 categoriesRoute.get('/bottleCategory/:id', fetchCategory)
 categoriesRoute.patch('/bottleCategory/update/:id', isGrantedAccess([role.VENDOR]), updateCategory)
-categoriesRoute.post('/bottleCategory/add', isGrantedAccess([role.VENDOR]), createCategory)
+categoriesRoute.post('/bottleCategory/add', createCategory)
 
 
 export default categoriesRoute

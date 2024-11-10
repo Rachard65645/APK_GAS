@@ -130,6 +130,7 @@ model BottlesCategories {
 model GasStation {
   id        String   @id @default(cuid())
   name      String
+  logo      String?   @default("uploads/undefined_1730556936927.png")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

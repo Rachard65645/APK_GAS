@@ -15,9 +15,9 @@ const selleRoute = express.Router()
 
 selleRoute.get('/seller', SellerCollection)
 selleRoute.get('/seller/:id', fetchSeller)
-selleRoute.patch('/seller/validate/:id', isGrantedAccess([role.ADMIN]), SuccessSeller)
-selleRoute.patch('/seller/refuse/:id',isGrantedAccess([role.ADMIN]), RefuseSeller)
-selleRoute.delete('/seller/delete/:id', isGrantedAccess([role.ADMIN]),  DeleteSeller)
+selleRoute.patch('/seller/validate/:id',  SuccessSeller)
+selleRoute.patch('/seller/refuse/:id', RefuseSeller)
+selleRoute.delete('/seller/delete/:id',  DeleteSeller)
 selleRoute.post('/seller/add', isGrantedAccess([role.USER]), uploadFiles , CraeteSeller)
 
-export default selleRoute
+export default selleRoute 

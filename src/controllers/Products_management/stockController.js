@@ -8,7 +8,15 @@ export const Create = async(req,res) => {
         const store = await prisma.stores.findUnique({ where: { id: store_id } })
 
         if (!store) {
-            return res.status(500).json({ error: 'store not found' })
+            return res.status(404).json({ error: 'store not found' })
+        }
+
+        const bottle = await prisma.gasStation.findUnique({
+            where: { id: gasBottle_id },
+        })
+
+        if (!bottle) {
+            return res.status(404).json({ error: 'bottle does not exist !!' })
         }
 
         const stock = await prisma.stocks.create({
@@ -16,10 +24,17 @@ export const Create = async(req,res) => {
               quantity,
               price,
               store_id: store_id,
-              gasBottles: {
-                
-              }  
+              gasBottle_id, 
             },
         })
-    } catch (err) {}
+
+        res.status(200).json(stock)
+    } catch (err) {
+        res.status(400).json({error: err.message})
+    }
 }
+
+
+
+
+//"http://192.168.1.77:4000/api/uploads/undefined_1729416738223.png"

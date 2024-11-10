@@ -27,7 +27,7 @@ export const getCategory = async (req, res)=>{
                 updatedAt: true
             }
         })
-        res.status(200).json(category)
+        res.status(200).json({categories: category})
     } catch (err) {
         res.status(500).json({ error: err.message })
     }

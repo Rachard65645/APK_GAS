@@ -28,7 +28,8 @@ const uploadFiles = upload.fields([
     { name: 'RCCM', maxCount: 1 },
     { name: 'Patente', maxCount: 1 },
     { name: 'CC', maxCount: 1 },
-    {name: 'logo', maxCount: 1}
+    {name: 'logo', maxCount: 1},
+    {name: 'image', maxCount: 1}
 ])
 
 export {uploadFiles}

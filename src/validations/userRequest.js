@@ -20,12 +20,6 @@ export const registerRequest = (req, res, next) => {
             'string.pattern.base': 'Invalid password',
             'string.empty': 'Password is required',
         }),
-        address: joi.string().required().messages({
-            'string.empty': 'Address is required',
-        }),
-        city: joi.string().required().messages({
-            'string.empty': 'City is required',
-        }),
     })
 
     const { error } = register.validate(req.body, { abortEarly: false })
