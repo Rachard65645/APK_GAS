@@ -1,40 +1,71 @@
 import { prisma } from '../../../db/db_config/config.js'
 
-export const Create = async(req,res) => {
-    try {
-        const { quantity, price, gasBottle_id } = req.body
-        const store_id = req.params.id
+export const Create = async (req, res) => {
+    const { quantity, price, gasBottle_id } = req.body;
+    const id = req.params.id;
 
-        const store = await prisma.stores.findUnique({ where: { id: store_id } })
+    if (!id) {
+        return res.status(400).json({ error: "Store ID is required" });
+    }
+
+    try {
+        const store = await prisma.stores.findUnique({ where: { id } });
 
         if (!store) {
-            return res.status(404).json({ error: 'store not found' })
-        }
-
-        const bottle = await prisma.gasStation.findUnique({
-            where: { id: gasBottle_id },
-        })
-
-        if (!bottle) {
-            return res.status(404).json({ error: 'bottle does not exist !!' })
+            return res.status(404).json({ error: "Store not found" });
         }
 
         const stock = await prisma.stocks.create({
             data: {
-              quantity,
-              price,
-              store_id: store_id,
-              gasBottle_id, 
+                quantity,
+                price,
+                store_id: store.id,
+                gasBottle_id,
             },
-        })
+        });
 
-        res.status(200).json(stock)
+        res.status(200).json(stock);
     } catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(500).json({ error: "An error occurred: " + err.message });
+    }
+};
+
+export const findStocks = async(req, res) => {
+    try {
+        const stocks = await prisma.stocks.findMany(
+            {
+                select: {
+                    quantity: true,
+                    price: true,
+                    stores: {
+                        select: {
+                            name: true,
+                        }
+                    },
+                    gasBottles: {
+                        select: {
+                            image: true,
+                            bottlesCategories: {
+                                select: {
+                                    weigth: true,
+                                    brand: true
+                                }
+                            },
+                            gasStations: {
+                                select: {
+                                    name: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        res.status(200).json(stocks);
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred: " + err.message });
     }
 }
-
-
 
 
 //"http://192.168.1.77:4000/api/uploads/undefined_1729416738223.png"

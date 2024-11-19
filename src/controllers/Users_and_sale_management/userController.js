@@ -9,9 +9,8 @@ import axios from 'axios'
 export const register = async (req, res) => {
     const { name, email, password, phone } = req.body
     try {
-
-       const response =  await axios(configuration)      
-       const {city, region} = response.data 
+        const response = await axios(configuration)      
+        const { city, region } = response.data 
 
         const hashPassword = await bcrypt.hash(password, saltRounds)
 
@@ -25,14 +24,18 @@ export const register = async (req, res) => {
                 password: hashPassword,
             },
         })
-        res.status(200).json(register)
+
         if (register) {
-            sendEmail(name, email, address)
+            await sendEmail(name, email, city); 
         }
-    } catch (err) { 
-        res.status(400).json({ error: err.message })
+
+        // Envoi de la réponse finale
+        res.status(200).json(register);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 }
+
 
 export const login = async (req, res) => {
     const { email, password } = req.body
@@ -87,7 +90,7 @@ export const currentUser = async (req, res) => {
     try {
         const user = await prisma.users.findFirst({ where: { id: user_id } , include: {Seller:true}})
         if (!user) {
-            res.status(400).json({ error: 'user not found' })
+            res.status(404).json({ error: 'user not found' })
         }
 
         req.user = user

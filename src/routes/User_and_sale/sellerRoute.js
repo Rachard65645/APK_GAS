@@ -10,6 +10,7 @@ import {
     SuccessSeller
     } from '../../controllers/Users_and_sale_management/sellerController.js'
 import { uploadFiles } from '../../upload/upload.js'
+import { createOrder } from '../../controllers/Orders_management/OrdersController.js'
 
 const selleRoute = express.Router()
 
@@ -19,5 +20,4 @@ selleRoute.patch('/seller/validate/:id',  SuccessSeller)
 selleRoute.patch('/seller/refuse/:id', RefuseSeller)
 selleRoute.delete('/seller/delete/:id',  DeleteSeller)
 selleRoute.post('/seller/add', isGrantedAccess([role.USER]), uploadFiles , CraeteSeller)
-
-export default selleRoute 
+export default selleRoute   

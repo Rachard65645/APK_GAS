@@ -9,6 +9,8 @@ import stationRoute from './src/routes/products/stationRoute.js';
 import categoriesRoute from './src/routes/products/categoriesRoutes.js';
 import gasBottleRoute from './src/routes/products/gasbottleRoute.js';
 import path from 'path'
+import StocksRouter from './src/routes/products/stockRoute.js';
+import orderRouter from './src/routes/orders/orderRoute.js';
 
 const app = express();
 const PORT =  4000;
@@ -27,12 +29,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', userRoute); 
+app.use('/api', userRoute);  
 app.use('/api', selleRoute); 
 app.use('/api', storeRoute); 
 app.use('/api', stationRoute); 
 app.use('/api', categoriesRoute); 
 app.use('/api', gasBottleRoute); 
+app.use('/api', StocksRouter)
+app.use('/api', orderRouter)
 app.use('/api/uploads', express.static(path.resolve('public/uploads')));
 
 

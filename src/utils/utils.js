@@ -17,3 +17,7 @@ export const Seller = {
     ACCEPTED: 'ACCEPTER',
     EN_COURS: 'EN_COURS'
 }
+
+export const STRATEGY = {
+    MONETBIL: 'MT'
+}

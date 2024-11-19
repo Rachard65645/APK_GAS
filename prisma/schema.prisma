@@ -13,7 +13,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") 
 }
 
 // User and point of sale management 
@@ -64,10 +64,12 @@ model Seller {
 model Stores {
   id        String   @id @default(cuid())
   name      String
-  pseudo    String?
+  statusStore    String
+  aboutStore     String
+  pseudo    String? 
   city      String
   address   String
-  logo      String?
+  logo      String
   lng       String?
   lat       String?
   seller_id String
@@ -89,7 +91,7 @@ model Stores {
 model Stocks {
   id           String   @id @default(cuid())
   quantity     Int
-  price        Int
+  price        Int     // Le prix de la bouteille
   store_id     String
   gasBottle_id String
   createdAt    DateTime @default(now())
@@ -130,7 +132,6 @@ model BottlesCategories {
 model GasStation {
   id        String   @id @default(cuid())
   name      String
-  logo      String?   @default("uploads/undefined_1730556936927.png")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -142,27 +143,28 @@ model OrderItems {
   id            String @id @default(cuid())
   price         Int
   quantity      Int
-  gasBottles_id String
-  orders_id     String
+  gasBottle_id String
+  order_id     String
+  aggregator_method_id String
 
-  gasBottles GasBottles @relation(fields: [gasBottles_id], references: [id], onDelete: Cascade)
-  orders     Orders     @relation(fields: [orders_id], references: [id], onDelete: Cascade)
+  gasBottles GasBottles? @relation(fields: [gasBottle_id], references: [id], onDelete: Cascade)
+  orders     Orders?     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  AggregatorMethods AggregatorMethods? @relation(fields: [aggregator_method_id], references: [id], onDelete: Cascade)
 
-  @@index([gasBottles_id])
-  @@index([orders_id])
+  
 }
 
 model Orders {
-  id        String   @id @default(cuid())
-  status    String
-  store_id  String
-  user_id   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String      @id @default(cuid())
+  status      String
+  store_id    String
+  user_id     String
+  transaction Transaction? @relation(fields: [transaction_id], references: [id])
+  transaction_id String?
 
-  stores     Stores       @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  users      Users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   OrderItems OrderItems[]
+  users      Users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  stores     Stores      @relation(fields: [store_id], references: [id], onDelete: Cascade)
 }
 
 //Payment management 
@@ -189,6 +191,8 @@ model AggregatorMethods {
   methodPaids       MethodPaid       @relation(fields: [methodPaid_id], references: [id], onDelete: Cascade)
 
   waittingWebhook waittingWebhook[]
+
+  OrderItems OrderItems[]
 }
 
 model AgregatorCustomer {
@@ -260,13 +264,32 @@ model Transaction {
   users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   waittingWebhook waittingWebhook[]
+
+  Orders Orders[]
+
+  PaymentHistory PaymentHistory[]
+
+  Payment Payment[]
 }
 
 model Payment {
   id       String   @id @default(cuid())
   startAt  DateTime @default(now())
   finishAt DateTime @updatedAt
+  transaction_id String
+  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
 }
+
+model PaymentHistory {
+  id            String   @id @default(cuid())
+  transaction_id String
+  status        String
+  message       String
+  timestamp     DateTime @default(now())
+
+  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+}
+
 
 model waittingWebhook {
   id                  String   @id @default(cuid())
