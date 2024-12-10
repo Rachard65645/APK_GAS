@@ -19,5 +19,10 @@ export const Seller = {
 }
 
 export const STRATEGY = {
-    MONETBIL: 'MT'
+    MONETBIL: 'MT',
+    CINETPAY: 'CN'
+}
+
+export const TransactionType = {
+    ACHAT: 'achat'
 }

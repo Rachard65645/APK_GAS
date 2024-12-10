@@ -48,10 +48,10 @@ export const filterStore = async (req, res) => {
     const filter = {}
 
     if (req.query.name) {
-        filter.name = { contains: req.query.name, mode: 'insensitive' }
+        filter.name = { contains: req.query.name.toLowerCase() }
     }
     if (req.query.address) {
-        filter.address = { contains: req.query.address, mode: 'insensitive' }
+        filter.address = { contains: req.query.address.toLowerCase() }
     }
 
     const pageSize = 10
@@ -72,7 +72,7 @@ export const filterStore = async (req, res) => {
                 city: true,
                 logo: true,
                 pseudo: true,
-                statusStore:true,
+                statusStore: true,
                 aboutStore: true,
                 Covers: {
                     select: {
@@ -93,6 +93,7 @@ export const filterStore = async (req, res) => {
         res.status(500).json({ error: err.message })
     }
 }
+
 
 export const getById = async (req, res) => {
     const id = req.params.id
@@ -214,6 +215,7 @@ export const fetchStoreById = async (req, res) => {
                         price: true,
                         gasBottles: {
                             select: {
+                                id: true,
                                 image: true,
                                 gasStations: {
                                     select: {
@@ -286,7 +288,6 @@ export const UpdateStore = async (req, res) => {
 }
 
 //store for user
-
 export const MyStore = async (req, res) => {
     const user_id = req.user.id
     try {
@@ -303,7 +304,15 @@ export const MyStore = async (req, res) => {
             return res.status(400).json({ error: 'seller not found' })
         }
 
-        const store = await prisma.stores.findMany({ where: { seller_id: seller.id } })
+        const store = await prisma.stores.findMany({ where: { seller_id: seller.id },
+         select: {
+            id: true,
+            name: true,
+            logo: true,
+            address: true,
+            city: true
+         }
+        })
 
         res.status(200).json(store)
     } catch (err) {

@@ -14,7 +14,7 @@ import orderRouter from './src/routes/orders/orderRoute.js';
 
 const app = express();
 const PORT =  4000;
-const host = '172.20.10.2'
+const host = '192.168.1.79'
 
 app.use(express.json());
 app.use(cors());

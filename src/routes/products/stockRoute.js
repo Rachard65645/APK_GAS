@@ -3,7 +3,7 @@ import { Create, findStocks } from '../../controllers/Products_management/stockC
 
 const StocksRouter = express.Router()
 
-StocksRouter.post('/stock/add/:id', Create)
+StocksRouter.post('/stock/add/:id' , Create)
 StocksRouter.get('/stock', findStocks)
 
 export default StocksRouter
