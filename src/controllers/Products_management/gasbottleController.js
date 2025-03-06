@@ -99,3 +99,49 @@ export const updateBotle = async (req, res) => {
         res.status(500).json({ error: err.message })
     }
 }
+
+
+
+export const getStoresByGasBottle = async (req, res) => {
+    try {
+      const { gasBottleId } = req.params;
+  
+      if (!gasBottleId) {
+        return res.status(400).json({ error: 'L\'ID de la bouteille de gaz est requis.' });
+      }
+  
+      
+      const stores = await prisma.stores.findMany({
+        where: {
+          Stocks: {
+            some: {
+              gasBottle_id: gasBottleId,
+            },
+          },
+        },
+        select: {
+            id: true,
+            name: true,
+            city: true,
+            address: true,
+            statusStore: true,
+            logo: true
+        }
+        // include: {
+        //   Stocks: {
+        //     where: {
+        //       gasBottle_id: gasBottleId,
+        //     },
+        //     include: {
+        //       gasBottles: true, 
+        //     },
+        //   },
+        // },
+      });
+  
+      
+      res.status(200).json(stores);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };

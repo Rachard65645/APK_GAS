@@ -11,13 +11,15 @@ import gasBottleRoute from './src/routes/products/gasbottleRoute.js';
 import path from 'path'
 import StocksRouter from './src/routes/products/stockRoute.js';
 import orderRouter from './src/routes/orders/orderRoute.js';
+import morgan from 'morgan';
 
 const app = express();
 const PORT =  4000;
-const host = '192.168.1.79'
+const host = '172.20.10.2'
 
 app.use(express.json());
 app.use(cors());
+app.use(morgan('dev'))
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

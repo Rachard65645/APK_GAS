@@ -31,9 +31,18 @@ export const Create = async (req, res) => {
 };
 
 export const findStocks = async(req, res) => {
+    const id = req.params.id
     try {
+
+        const store = await prisma.stores.findUnique({where: {id}})
+
+        if (!store) {
+            return res.status(400).json({error: 'store not found'})
+        }
+
         const stocks = await prisma.stocks.findMany(
             {
+                where: {store_id: store.id},
                 select: {
                     quantity: true,
                     price: true,
@@ -68,4 +77,3 @@ export const findStocks = async(req, res) => {
 }
 
 
-//"http://192.168.1.77:4000/api/uploads/undefined_1729416738223.png"
