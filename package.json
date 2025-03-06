@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon --experimental-specifier-resolution=node server.js",
-        "format:fix": "prettier --write ."
+        "format:fix": "prettier --write .",
+        "vercel-build": "prisma generate && prisma migrate deploy && npm run build"
     },
     "keywords": [],
     "author": "",

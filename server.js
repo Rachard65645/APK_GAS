@@ -15,7 +15,7 @@ import morgan from 'morgan';
 
 const app = express();
 const PORT =  4000;
-const host = '172.20.10.2'
+const host = '192.168.100.174'
 
 app.use(express.json());
 app.use(cors());
