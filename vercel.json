@@ -1,15 +1,10 @@
 {
-    "version": 2,
+    "version": 1,
+    "name": "APK-GAS",
     "builds": [
-        {
-            "src": "server.js",
-            "use": "@vercel/node"
-        }
+        {"src": "server.js", "use": "@vercel/node"}
     ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "server.js"
-        }
+    "router": [
+        {"src": "/(.*)", "dest": "server.js"}
     ]
 }
